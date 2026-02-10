@@ -1,0 +1,2306 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AIS Course Learning Portal</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="/_sdk/element_sdk.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      box-sizing: border-box;
+    }
+    
+    * {
+      font-family: 'Outfit', sans-serif;
+    }
+    
+    .mono {
+      font-family: 'Space Mono', monospace;
+    }
+    
+    .gradient-bg {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+    }
+    
+    .card-gradient {
+      background: linear-gradient(145deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+      backdrop-filter: blur(10px);
+    }
+    
+    .glow-effect {
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.15);
+    }
+    
+    .week-tab {
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .week-tab:hover {
+      transform: translateY(-2px);
+    }
+    
+    .week-tab.active {
+      background: linear-gradient(135deg, #6366f1, #8b5cf6);
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.4);
+    }
+    
+    .section-btn {
+      transition: all 0.2s ease;
+    }
+    
+    .section-btn:hover {
+      transform: scale(1.02);
+    }
+    
+    .section-btn.active {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: #6366f1;
+    }
+    
+    .quiz-option {
+      transition: all 0.2s ease;
+      cursor: pointer;
+    }
+    
+    .quiz-option:hover:not(.selected):not(.correct):not(.incorrect) {
+      background: rgba(99, 102, 241, 0.1);
+      border-color: #6366f1;
+    }
+    
+    .quiz-option.selected {
+      background: rgba(99, 102, 241, 0.2);
+      border-color: #6366f1;
+    }
+    
+    .quiz-option.correct {
+      background: rgba(34, 197, 94, 0.2);
+      border-color: #22c55e;
+    }
+    
+    .quiz-option.incorrect {
+      background: rgba(239, 68, 68, 0.2);
+      border-color: #ef4444;
+    }
+    
+    .progress-bar {
+      background: linear-gradient(90deg, #6366f1, #8b5cf6, #a855f7);
+      transition: width 0.5s ease;
+    }
+    
+    .fade-in {
+      animation: fadeIn 0.4s ease-out;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    .slide-up {
+      animation: slideUp 0.5s ease-out;
+    }
+    
+    @keyframes slideUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    ::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    ::-webkit-scrollbar-track {
+      background: #1e293b;
+    }
+    
+    ::-webkit-scrollbar-thumb {
+      background: #475569;
+      border-radius: 4px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+      background: #6366f1;
+    }
+  </style>
+</head>
+<body class="h-full gradient-bg text-slate-100 overflow-auto">
+  <div id="app" class="h-full w-full">
+    <!-- Header -->
+    <header class="sticky top-0 z-50 bg-slate-900/90 backdrop-blur-lg border-b border-slate-700/50">
+      <div class="max-w-7xl mx-auto px-4 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-2xl">
+              📊
+            </div>
+            <div>
+              <h1 id="course-title" class="text-xl font-bold text-white">Accounting Information Systems</h1>
+              <p id="instructor-display" class="text-sm text-slate-400">5-Week Comprehensive Course</p>
+            </div>
+          </div>
+          <div class="hidden md:flex items-center gap-4">
+            <div class="text-right">
+              <p class="text-xs text-slate-400">Progress</p>
+              <p class="text-sm font-semibold text-indigo-400 mono" id="overall-progress">0%</p>
+            </div>
+            <div class="w-32 h-2 bg-slate-700 rounded-full overflow-hidden">
+              <div id="progress-fill" class="progress-bar h-full rounded-full" style="width: 0%"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Week Navigation -->
+    <nav class="sticky top-[73px] z-40 bg-slate-800/80 backdrop-blur-lg border-b border-slate-700/50">
+      <div class="max-w-7xl mx-auto px-4 py-3">
+        <div class="flex gap-2 overflow-x-auto pb-1" id="week-tabs">
+          <!-- Week tabs will be generated here -->
+        </div>
+      </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="max-w-7xl mx-auto px-4 py-8">
+      <div id="content-area" class="fade-in">
+        <!-- Content will be loaded here -->
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-700/50 bg-slate-900/50 mt-auto">
+      <div class="max-w-7xl mx-auto px-4 py-6 text-center">
+        <p class="text-slate-400 text-sm">📚 AIS Learning Portal • Designed for Accounting Students</p>
+      </div>
+    </footer>
+  </div>
+
+  <script>
+    // Course Data
+    const courseData = {
+      weeks: [
+        {
+          id: 1,
+          title: "Introduction to Accounting Information Systems",
+          icon: "🎯",
+          topics: [
+            "Overview of AIS",
+            "Role of AIS in organizations",
+            "AIS vs Traditional Accounting",
+            "AIS Components (People, Procedures, Data, Software, IT Infrastructure)"
+          ],
+          content: {
+            overview: `
+              <h3 class="text-2xl font-bold text-white mb-6">📌 Week 1: Introduction to Accounting Information Systems</h3>
+              
+              <div class="space-y-6">
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🔍 What is an Accounting Information System (AIS)?</h4>
+                  <p class="text-slate-300 leading-relaxed mb-4">
+                    An <strong class="text-white">Accounting Information System (AIS)</strong> is a structured system that collects, stores, processes, and reports financial and accounting data. It helps organizations make informed business decisions.
+                  </p>
+                  <div class="bg-slate-800/50 rounded-xl p-4 border-l-4 border-indigo-500">
+                    <p class="text-slate-300 italic">"AIS is the bridge between raw financial data and meaningful business intelligence."</p>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🏢 Role of AIS in Organizations</h4>
+                  <ul class="space-y-3 text-slate-300">
+                    <li class="flex items-start gap-3">
+                      <span class="text-green-400 mt-1">✓</span>
+                      <span><strong class="text-white">Data Collection:</strong> Gathers financial transactions from various sources</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                      <span class="text-green-400 mt-1">✓</span>
+                      <span><strong class="text-white">Data Processing:</strong> Transforms raw data into useful information</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                      <span class="text-green-400 mt-1">✓</span>
+                      <span><strong class="text-white">Information Storage:</strong> Maintains organized records for future reference</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                      <span class="text-green-400 mt-1">✓</span>
+                      <span><strong class="text-white">Reporting:</strong> Generates financial statements and management reports</span>
+                    </li>
+                    <li class="flex items-start gap-3">
+                      <span class="text-green-400 mt-1">✓</span>
+                      <span><strong class="text-white">Internal Controls:</strong> Ensures accuracy and prevents fraud</span>
+                    </li>
+                  </ul>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">⚖️ AIS vs Traditional Accounting</h4>
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead>
+                        <tr class="border-b border-slate-600">
+                          <th class="text-left py-3 px-4 text-indigo-300">Aspect</th>
+                          <th class="text-left py-3 px-4 text-indigo-300">Traditional Accounting</th>
+                          <th class="text-left py-3 px-4 text-indigo-300">AIS</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-slate-300">
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Data Entry</td>
+                          <td class="py-3 px-4">Manual, paper-based</td>
+                          <td class="py-3 px-4">Automated, digital</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Speed</td>
+                          <td class="py-3 px-4">Slow processing</td>
+                          <td class="py-3 px-4">Real-time processing</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Accuracy</td>
+                          <td class="py-3 px-4">Prone to human error</td>
+                          <td class="py-3 px-4">Higher accuracy with validation</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Storage</td>
+                          <td class="py-3 px-4">Physical files</td>
+                          <td class="py-3 px-4">Digital databases</td>
+                        </tr>
+                        <tr>
+                          <td class="py-3 px-4 font-medium text-white">Reporting</td>
+                          <td class="py-3 px-4">Time-consuming</td>
+                          <td class="py-3 px-4">Instant report generation</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🧩 Five Components of AIS</h4>
+                  <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                      <div class="text-3xl mb-2">👥</div>
+                      <h5 class="font-semibold text-white mb-1">People</h5>
+                      <p class="text-sm text-slate-400">Users who operate and maintain the system</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                      <div class="text-3xl mb-2">📋</div>
+                      <h5 class="font-semibold text-white mb-1">Procedures</h5>
+                      <p class="text-sm text-slate-400">Methods for collecting, storing, and processing data</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                      <div class="text-3xl mb-2">💾</div>
+                      <h5 class="font-semibold text-white mb-1">Data</h5>
+                      <p class="text-sm text-slate-400">Financial information and transactions</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                      <div class="text-3xl mb-2">💻</div>
+                      <h5 class="font-semibold text-white mb-1">Software</h5>
+                      <p class="text-sm text-slate-400">Programs used to process data</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4 text-center md:col-span-2 lg:col-span-1">
+                      <div class="text-3xl mb-2">🖥️</div>
+                      <h5 class="font-semibold text-white mb-1">IT Infrastructure</h5>
+                      <p class="text-sm text-slate-400">Hardware and network components</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-2xl p-6 border border-indigo-500/30">
+                  <h4 class="text-lg font-semibold text-white mb-3">💡 Key Takeaways</h4>
+                  <ul class="space-y-2 text-slate-300">
+                    <li>• AIS integrates accounting with information technology</li>
+                    <li>• It improves efficiency, accuracy, and decision-making</li>
+                    <li>• All five components must work together for effective AIS</li>
+                    <li>• Modern businesses rely heavily on AIS for competitive advantage</li>
+                  </ul>
+                </div>
+              </div>
+            `,
+            activity: `
+              <h3 class="text-2xl font-bold text-white mb-6">🎮 Week 1 Activity: AIS Component Matching</h3>
+              
+              <div class="card-gradient rounded-2xl p-6 border border-slate-600/30 mb-6">
+                <h4 class="text-lg font-semibold text-indigo-400 mb-4">Instructions</h4>
+                <p class="text-slate-300 mb-4">Match each scenario to the correct AIS component by clicking on the matching pairs. Try to complete all matches correctly!</p>
+              </div>
+
+              <div id="matching-game" class="space-y-4">
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h5 class="text-sm font-semibold text-indigo-400 mb-3 uppercase tracking-wide">Scenarios</h5>
+                    <div id="scenarios" class="space-y-3">
+                      <!-- Scenarios will be generated -->
+                    </div>
+                  </div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-indigo-400 mb-3 uppercase tracking-wide">Components</h5>
+                    <div id="components" class="space-y-3">
+                      <!-- Components will be generated -->
+                    </div>
+                  </div>
+                </div>
+                
+                <div id="game-feedback" class="mt-6 hidden">
+                  <div class="bg-green-900/30 rounded-xl p-4 border border-green-500/30">
+                    <p class="text-green-400 font-semibold">🎉 Excellent! You've matched all components correctly!</p>
+                  </div>
+                </div>
+                
+                <button onclick="resetMatchingGame()" class="mt-4 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-all">
+                  🔄 Reset Activity
+                </button>
+              </div>
+            `,
+            quiz: [
+              {
+                question: "What does AIS stand for?",
+                options: [
+                  "Automated Information System",
+                  "Accounting Information System",
+                  "Advanced Integrated Software",
+                  "Accounting Internet Service"
+                ],
+                correct: 1,
+                explanation: "AIS stands for Accounting Information System - a structured system that collects, stores, processes, and reports financial data."
+              },
+              {
+                question: "Which of the following is NOT a component of AIS?",
+                options: [
+                  "People",
+                  "Software",
+                  "Marketing Strategy",
+                  "IT Infrastructure"
+                ],
+                correct: 2,
+                explanation: "The five components of AIS are: People, Procedures, Data, Software, and IT Infrastructure. Marketing Strategy is not a component of AIS."
+              },
+              {
+                question: "What is a key advantage of AIS over traditional accounting?",
+                options: [
+                  "Requires more staff",
+                  "Uses only paper records",
+                  "Real-time data processing",
+                  "Slower report generation"
+                ],
+                correct: 2,
+                explanation: "AIS provides real-time data processing, which is much faster than traditional manual accounting methods."
+              },
+              {
+                question: "Which component of AIS refers to accountants and IT staff who operate the system?",
+                options: [
+                  "Software",
+                  "Data",
+                  "People",
+                  "Procedures"
+                ],
+                correct: 2,
+                explanation: "People refers to all users who operate, maintain, and manage the AIS, including accountants and IT professionals."
+              },
+              {
+                question: "The primary purpose of AIS is to:",
+                options: [
+                  "Replace all accountants",
+                  "Collect, process, and report financial information",
+                  "Only store paper documents",
+                  "Manage employee schedules"
+                ],
+                correct: 1,
+                explanation: "The primary purpose of AIS is to collect, store, process, and report financial and accounting data to support decision-making."
+              }
+            ]
+          }
+        },
+        {
+          id: 2,
+          title: "Business Processes and AIS Environment",
+          icon: "⚙️",
+          topics: [
+            "Business Process Modeling",
+            "Organizational Structure and AIS",
+            "Cross-functional integration"
+          ],
+          content: {
+            overview: `
+              <h3 class="text-2xl font-bold text-white mb-6">📌 Week 2: Business Processes and AIS Environment</h3>
+              
+              <div class="space-y-6">
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🔄 What is Business Process Modeling?</h4>
+                  <p class="text-slate-300 leading-relaxed mb-4">
+                    <strong class="text-white">Business Process Modeling</strong> is the activity of representing the processes of an enterprise so that the current process can be analyzed, improved, and automated.
+                  </p>
+                  <div class="bg-slate-800/50 rounded-xl p-4">
+                    <h5 class="font-semibold text-white mb-2">Key Business Processes in AIS:</h5>
+                    <div class="grid md:grid-cols-2 gap-3">
+                      <div class="flex items-center gap-2 text-slate-300">
+                        <span class="text-indigo-400">→</span> Revenue Cycle (Sales & Collection)
+                      </div>
+                      <div class="flex items-center gap-2 text-slate-300">
+                        <span class="text-indigo-400">→</span> Expenditure Cycle (Purchasing & Payments)
+                      </div>
+                      <div class="flex items-center gap-2 text-slate-300">
+                        <span class="text-indigo-400">→</span> Production Cycle (Manufacturing)
+                      </div>
+                      <div class="flex items-center gap-2 text-slate-300">
+                        <span class="text-indigo-400">→</span> HR/Payroll Cycle
+                      </div>
+                      <div class="flex items-center gap-2 text-slate-300 md:col-span-2">
+                        <span class="text-indigo-400">→</span> Financing Cycle (Capital & Cash Management)
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🏗️ Organizational Structure and AIS</h4>
+                  <p class="text-slate-300 mb-4">The organizational structure determines how information flows through an AIS. Different structures affect how data is collected, processed, and reported.</p>
+                  
+                  <div class="space-y-4">
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-white mb-2">📊 Functional Structure</h5>
+                      <p class="text-slate-400 text-sm">Departments organized by function (Accounting, Marketing, Production). Each department has its own data but shares through the AIS.</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-white mb-2">🌐 Divisional Structure</h5>
+                      <p class="text-slate-400 text-sm">Organized by product lines, regions, or customers. Each division may have its own AIS that reports to a central system.</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-white mb-2">🔀 Matrix Structure</h5>
+                      <p class="text-slate-400 text-sm">Combines functional and divisional approaches. AIS must handle complex reporting relationships.</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🔗 Cross-Functional Integration</h4>
+                  <p class="text-slate-300 mb-4">Modern AIS must integrate data across different functional areas to provide a complete picture of organizational performance.</p>
+                  
+                  <div class="relative">
+                    <div class="flex flex-wrap justify-center gap-4 mb-4">
+                      <div class="bg-blue-900/40 rounded-xl p-4 text-center min-w-[120px] border border-blue-500/30">
+                        <div class="text-2xl mb-1">💰</div>
+                        <p class="text-sm text-blue-300">Finance</p>
+                      </div>
+                      <div class="bg-green-900/40 rounded-xl p-4 text-center min-w-[120px] border border-green-500/30">
+                        <div class="text-2xl mb-1">📦</div>
+                        <p class="text-sm text-green-300">Operations</p>
+                      </div>
+                      <div class="bg-purple-900/40 rounded-xl p-4 text-center min-w-[120px] border border-purple-500/30">
+                        <div class="text-2xl mb-1">📢</div>
+                        <p class="text-sm text-purple-300">Marketing</p>
+                      </div>
+                      <div class="bg-orange-900/40 rounded-xl p-4 text-center min-w-[120px] border border-orange-500/30">
+                        <div class="text-2xl mb-1">👥</div>
+                        <p class="text-sm text-orange-300">HR</p>
+                      </div>
+                    </div>
+                    <div class="text-center">
+                      <div class="inline-block bg-indigo-900/50 rounded-xl p-4 border border-indigo-500/30">
+                        <div class="text-3xl mb-1">🔄</div>
+                        <p class="font-semibold text-indigo-300">Integrated AIS</p>
+                        <p class="text-xs text-slate-400">Central Data Hub</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">📈 Benefits of Process Integration</h4>
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div class="flex items-start gap-3">
+                      <span class="text-green-400 text-xl">✅</span>
+                      <div>
+                        <p class="font-medium text-white">Eliminates Data Silos</p>
+                        <p class="text-sm text-slate-400">All departments access the same data source</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-green-400 text-xl">✅</span>
+                      <div>
+                        <p class="font-medium text-white">Improves Decision Making</p>
+                        <p class="text-sm text-slate-400">Complete information for better choices</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-green-400 text-xl">✅</span>
+                      <div>
+                        <p class="font-medium text-white">Reduces Redundancy</p>
+                        <p class="text-sm text-slate-400">Data entered once, used everywhere</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-green-400 text-xl">✅</span>
+                      <div>
+                        <p class="font-medium text-white">Enhances Efficiency</p>
+                        <p class="text-sm text-slate-400">Streamlined workflows across departments</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-2xl p-6 border border-indigo-500/30">
+                  <h4 class="text-lg font-semibold text-white mb-3">💡 Key Takeaways</h4>
+                  <ul class="space-y-2 text-slate-300">
+                    <li>• Business processes are the foundation of AIS design</li>
+                    <li>• Organizational structure influences how AIS is implemented</li>
+                    <li>• Cross-functional integration is essential for modern AIS</li>
+                    <li>• ERP systems exemplify integrated business process management</li>
+                  </ul>
+                </div>
+              </div>
+            `,
+            activity: `
+              <h3 class="text-2xl font-bold text-white mb-6">🎮 Week 2 Activity: Business Cycle Identification</h3>
+              
+              <div class="card-gradient rounded-2xl p-6 border border-slate-600/30 mb-6">
+                <h4 class="text-lg font-semibold text-indigo-400 mb-4">Instructions</h4>
+                <p class="text-slate-300 mb-4">Drag each business activity to its correct business cycle. Understanding these cycles is crucial for AIS design!</p>
+              </div>
+
+              <div id="cycle-game" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div>
+                    <h5 class="text-sm font-semibold text-indigo-400 mb-3 uppercase tracking-wide">Activities to Classify</h5>
+                    <div id="activity-pool" class="space-y-2 min-h-[200px] bg-slate-800/30 rounded-xl p-4 border-2 border-dashed border-slate-600">
+                      <!-- Activities will be generated -->
+                    </div>
+                  </div>
+                  <div class="space-y-4">
+                    <div>
+                      <h5 class="text-sm font-semibold text-green-400 mb-2">💰 Revenue Cycle</h5>
+                      <div id="revenue-drop" class="min-h-[60px] bg-green-900/20 rounded-xl p-3 border-2 border-dashed border-green-500/30 cycle-drop" data-cycle="revenue">
+                        <p class="text-slate-500 text-sm italic">Drop revenue activities here...</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h5 class="text-sm font-semibold text-blue-400 mb-2">📦 Expenditure Cycle</h5>
+                      <div id="expenditure-drop" class="min-h-[60px] bg-blue-900/20 rounded-xl p-3 border-2 border-dashed border-blue-500/30 cycle-drop" data-cycle="expenditure">
+                        <p class="text-slate-500 text-sm italic">Drop expenditure activities here...</p>
+                      </div>
+                    </div>
+                    <div>
+                      <h5 class="text-sm font-semibold text-orange-400 mb-2">👥 HR/Payroll Cycle</h5>
+                      <div id="hr-drop" class="min-h-[60px] bg-orange-900/20 rounded-xl p-3 border-2 border-dashed border-orange-500/30 cycle-drop" data-cycle="hr">
+                        <p class="text-slate-500 text-sm italic">Drop HR activities here...</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                
+                <div id="cycle-feedback" class="hidden">
+                  <div class="bg-green-900/30 rounded-xl p-4 border border-green-500/30">
+                    <p class="text-green-400 font-semibold">🎉 Great job! You've correctly classified all activities!</p>
+                  </div>
+                </div>
+                
+                <button onclick="checkCycleAnswers()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all mr-3">
+                  ✓ Check Answers
+                </button>
+                <button onclick="resetCycleGame()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-all">
+                  🔄 Reset Activity
+                </button>
+              </div>
+            `,
+            quiz: [
+              {
+                question: "Which business cycle handles customer orders and cash collection?",
+                options: [
+                  "Expenditure Cycle",
+                  "Revenue Cycle",
+                  "Production Cycle",
+                  "HR/Payroll Cycle"
+                ],
+                correct: 1,
+                explanation: "The Revenue Cycle handles all activities related to selling goods/services to customers and collecting payments."
+              },
+              {
+                question: "Cross-functional integration in AIS primarily helps to:",
+                options: [
+                  "Increase data silos",
+                  "Slow down processing",
+                  "Share data across departments",
+                  "Reduce security"
+                ],
+                correct: 2,
+                explanation: "Cross-functional integration enables different departments to share data seamlessly, improving coordination and decision-making."
+              },
+              {
+                question: "In a functional organizational structure, departments are organized by:",
+                options: [
+                  "Geographic location",
+                  "Product lines",
+                  "Job function (e.g., Accounting, Marketing)",
+                  "Customer segments"
+                ],
+                correct: 2,
+                explanation: "A functional structure organizes departments by their specific function or expertise area."
+              },
+              {
+                question: "Which cycle involves purchasing inventory and paying suppliers?",
+                options: [
+                  "Revenue Cycle",
+                  "Expenditure Cycle",
+                  "Financing Cycle",
+                  "Production Cycle"
+                ],
+                correct: 1,
+                explanation: "The Expenditure Cycle handles purchasing goods/services from suppliers and processing payments."
+              },
+              {
+                question: "ERP systems are an example of:",
+                options: [
+                  "Single-function software",
+                  "Integrated cross-functional systems",
+                  "Manual accounting systems",
+                  "Spreadsheet applications"
+                ],
+                correct: 1,
+                explanation: "ERP (Enterprise Resource Planning) systems integrate all business processes into a single, unified system."
+              }
+            ]
+          }
+        },
+        {
+          id: 3,
+          title: "AIS Data and Transaction Processing",
+          icon: "💾",
+          topics: [
+            "Types of accounting data",
+            "Transaction Processing Systems (TPS)",
+            "Source documents and data capture"
+          ],
+          content: {
+            overview: `
+              <h3 class="text-2xl font-bold text-white mb-6">📌 Week 3: AIS Data and Transaction Processing</h3>
+              
+              <div class="space-y-6">
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">📊 Types of Accounting Data</h4>
+                  <p class="text-slate-300 leading-relaxed mb-4">
+                    Accounting data can be categorized based on its nature, source, and use within the organization.
+                  </p>
+                  
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-blue-400 mb-2">📝 Transaction Data</h5>
+                      <p class="text-sm text-slate-400">Records of business events (sales, purchases, payments)</p>
+                      <div class="mt-2 text-xs text-slate-500">Examples: Invoice #, Amount, Date, Customer ID</div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-green-400 mb-2">📚 Master Data</h5>
+                      <p class="text-sm text-slate-400">Reference data that remains relatively constant</p>
+                      <div class="mt-2 text-xs text-slate-500">Examples: Customer list, Chart of Accounts, Vendor info</div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-purple-400 mb-2">📈 Summary Data</h5>
+                      <p class="text-sm text-slate-400">Aggregated information for reporting</p>
+                      <div class="mt-2 text-xs text-slate-500">Examples: Monthly totals, Account balances</div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-orange-400 mb-2">📋 Metadata</h5>
+                      <p class="text-sm text-slate-400">Data about data (structure, formats, definitions)</p>
+                      <div class="mt-2 text-xs text-slate-500">Examples: Data dictionary, Field descriptions</div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">⚙️ Transaction Processing Systems (TPS)</h4>
+                  <p class="text-slate-300 mb-4">A TPS captures and processes business transactions, forming the foundation of all AIS operations.</p>
+                  
+                  <div class="bg-slate-800/50 rounded-xl p-4 mb-4">
+                    <h5 class="font-semibold text-white mb-3">Transaction Processing Cycle:</h5>
+                    <div class="flex flex-wrap items-center justify-center gap-2 text-sm">
+                      <span class="bg-indigo-900/50 px-3 py-2 rounded-lg">📥 Data Input</span>
+                      <span class="text-indigo-400">→</span>
+                      <span class="bg-indigo-900/50 px-3 py-2 rounded-lg">✅ Validation</span>
+                      <span class="text-indigo-400">→</span>
+                      <span class="bg-indigo-900/50 px-3 py-2 rounded-lg">⚙️ Processing</span>
+                      <span class="text-indigo-400">→</span>
+                      <span class="bg-indigo-900/50 px-3 py-2 rounded-lg">💾 Storage</span>
+                      <span class="text-indigo-400">→</span>
+                      <span class="bg-indigo-900/50 px-3 py-2 rounded-lg">📤 Output</span>
+                    </div>
+                  </div>
+
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-blue-900/30 rounded-xl p-4 border border-blue-500/30">
+                      <h5 class="font-semibold text-blue-300 mb-2">🔄 Batch Processing</h5>
+                      <p class="text-sm text-slate-400">Transactions collected and processed together at scheduled intervals</p>
+                      <p class="text-xs text-blue-400 mt-2">Best for: Payroll, End-of-day reports</p>
+                    </div>
+                    <div class="bg-green-900/30 rounded-xl p-4 border border-green-500/30">
+                      <h5 class="font-semibold text-green-300 mb-2">⚡ Real-time Processing</h5>
+                      <p class="text-sm text-slate-400">Transactions processed immediately as they occur</p>
+                      <p class="text-xs text-green-400 mt-2">Best for: Point of sale, ATM transactions</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">📄 Source Documents and Data Capture</h4>
+                  <p class="text-slate-300 mb-4">Source documents are the original records that provide evidence of business transactions.</p>
+                  
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead>
+                        <tr class="border-b border-slate-600">
+                          <th class="text-left py-3 px-4 text-indigo-300">Document Type</th>
+                          <th class="text-left py-3 px-4 text-indigo-300">Purpose</th>
+                          <th class="text-left py-3 px-4 text-indigo-300">Example Data Captured</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-slate-300">
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">📜 Sales Invoice</td>
+                          <td class="py-3 px-4">Records sales to customers</td>
+                          <td class="py-3 px-4">Date, Customer, Items, Amount</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">📦 Purchase Order</td>
+                          <td class="py-3 px-4">Orders goods from suppliers</td>
+                          <td class="py-3 px-4">Vendor, Items, Quantity, Price</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">🧾 Receipt</td>
+                          <td class="py-3 px-4">Confirms payment received</td>
+                          <td class="py-3 px-4">Amount, Payment method, Date</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">⏰ Timesheet</td>
+                          <td class="py-3 px-4">Records employee hours</td>
+                          <td class="py-3 px-4">Employee ID, Hours, Date, Project</td>
+                        </tr>
+                        <tr>
+                          <td class="py-3 px-4 font-medium text-white">💳 Bank Statement</td>
+                          <td class="py-3 px-4">Records bank transactions</td>
+                          <td class="py-3 px-4">Deposits, Withdrawals, Balance</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🔐 Data Validation Techniques</h4>
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div class="flex items-start gap-3">
+                      <span class="text-indigo-400 text-xl">🔢</span>
+                      <div>
+                        <p class="font-medium text-white">Field Check</p>
+                        <p class="text-sm text-slate-400">Ensures data is correct type (numbers in number fields)</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-indigo-400 text-xl">📏</span>
+                      <div>
+                        <p class="font-medium text-white">Range Check</p>
+                        <p class="text-sm text-slate-400">Verifies data falls within acceptable limits</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-indigo-400 text-xl">✅</span>
+                      <div>
+                        <p class="font-medium text-white">Completeness Check</p>
+                        <p class="text-sm text-slate-400">Ensures all required fields are filled</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-indigo-400 text-xl">🔍</span>
+                      <div>
+                        <p class="font-medium text-white">Validity Check</p>
+                        <p class="text-sm text-slate-400">Compares against list of valid values</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-2xl p-6 border border-indigo-500/30">
+                  <h4 class="text-lg font-semibold text-white mb-3">💡 Key Takeaways</h4>
+                  <ul class="space-y-2 text-slate-300">
+                    <li>• Transaction data is the lifeblood of AIS</li>
+                    <li>• TPS must be accurate, reliable, and efficient</li>
+                    <li>• Source documents provide audit trail and evidence</li>
+                    <li>• Data validation prevents errors from entering the system</li>
+                  </ul>
+                </div>
+              </div>
+            `,
+            activity: `
+              <h3 class="text-2xl font-bold text-white mb-6">🎮 Week 3 Activity: Source Document Analysis</h3>
+              
+              <div class="card-gradient rounded-2xl p-6 border border-slate-600/30 mb-6">
+                <h4 class="text-lg font-semibold text-indigo-400 mb-4">Instructions</h4>
+                <p class="text-slate-300 mb-4">Analyze the sample sales invoice below and identify all the data elements captured. Click on each element you find!</p>
+              </div>
+
+              <div id="document-activity" class="space-y-6">
+                <div class="bg-white rounded-2xl p-6 text-slate-800 max-w-2xl mx-auto shadow-xl">
+                  <div class="border-b-2 border-slate-200 pb-4 mb-4">
+                    <div class="flex justify-between items-start">
+                      <div>
+                        <h5 class="text-xl font-bold text-indigo-600">ABC COMPANY</h5>
+                        <p class="text-sm text-slate-500">123 Business Street, Metro City</p>
+                      </div>
+                      <div class="text-right">
+                        <p class="text-lg font-bold">INVOICE</p>
+                        <p class="text-sm" id="doc-inv-num" onclick="selectDocElement(this, 'Invoice Number')">#INV-2024-001 <span class="text-xs">👆</span></p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                    <div>
+                      <p class="text-slate-500">Bill To:</p>
+                      <p id="doc-customer" onclick="selectDocElement(this, 'Customer Name')" class="font-semibold">XYZ Corporation <span class="text-xs">👆</span></p>
+                      <p class="text-slate-500">456 Client Ave</p>
+                    </div>
+                    <div class="text-right">
+                      <p><span class="text-slate-500">Date:</span> <span id="doc-date" onclick="selectDocElement(this, 'Transaction Date')">Jan 15, 2024 <span class="text-xs">👆</span></span></p>
+                      <p><span class="text-slate-500">Due:</span> Feb 15, 2024</p>
+                    </div>
+                  </div>
+                  
+                  <table class="w-full text-sm mb-4">
+                    <thead class="bg-slate-100">
+                      <tr>
+                        <th class="text-left py-2 px-3">Description</th>
+                        <th class="text-center py-2 px-3" id="doc-qty" onclick="selectDocElement(this, 'Quantity')">Qty <span class="text-xs">👆</span></th>
+                        <th class="text-right py-2 px-3" id="doc-price" onclick="selectDocElement(this, 'Unit Price')">Price <span class="text-xs">👆</span></th>
+                        <th class="text-right py-2 px-3">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr class="border-b border-slate-100">
+                        <td class="py-2 px-3" id="doc-item" onclick="selectDocElement(this, 'Item Description')">Product A - Premium <span class="text-xs">👆</span></td>
+                        <td class="text-center py-2 px-3">10</td>
+                        <td class="text-right py-2 px-3">$100.00</td>
+                        <td class="text-right py-2 px-3">$1,000.00</td>
+                      </tr>
+                      <tr class="border-b border-slate-100">
+                        <td class="py-2 px-3">Product B - Standard</td>
+                        <td class="text-center py-2 px-3">5</td>
+                        <td class="text-right py-2 px-3">$50.00</td>
+                        <td class="text-right py-2 px-3">$250.00</td>
+                      </tr>
+                    </tbody>
+                  </table>
+                  
+                  <div class="text-right border-t border-slate-200 pt-4">
+                    <p class="text-slate-500">Subtotal: $1,250.00</p>
+                    <p class="text-slate-500">Tax (10%): $125.00</p>
+                    <p class="text-xl font-bold text-indigo-600" id="doc-total" onclick="selectDocElement(this, 'Total Amount')">Total: $1,375.00 <span class="text-xs">👆</span></p>
+                  </div>
+                </div>
+                
+                <div class="bg-slate-800/50 rounded-xl p-4">
+                  <h5 class="font-semibold text-white mb-3">Data Elements Found: <span id="found-count" class="text-indigo-400">0</span>/7</h5>
+                  <div id="found-elements" class="flex flex-wrap gap-2">
+                    <!-- Found elements will appear here -->
+                  </div>
+                </div>
+                
+                <div id="doc-feedback" class="hidden">
+                  <div class="bg-green-900/30 rounded-xl p-4 border border-green-500/30">
+                    <p class="text-green-400 font-semibold">🎉 Excellent! You've identified all the key data elements in this invoice!</p>
+                  </div>
+                </div>
+                
+                <button onclick="resetDocActivity()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-all">
+                  🔄 Reset Activity
+                </button>
+              </div>
+            `,
+            quiz: [
+              {
+                question: "Which type of data remains relatively constant and serves as reference information?",
+                options: [
+                  "Transaction Data",
+                  "Master Data",
+                  "Summary Data",
+                  "Metadata"
+                ],
+                correct: 1,
+                explanation: "Master Data (like customer lists or chart of accounts) remains relatively stable and serves as reference information for transactions."
+              },
+              {
+                question: "Batch processing is most suitable for:",
+                options: [
+                  "ATM transactions",
+                  "Point of sale transactions",
+                  "Payroll processing",
+                  "Online banking transfers"
+                ],
+                correct: 2,
+                explanation: "Batch processing is ideal for payroll where all employee records can be processed together at scheduled times."
+              },
+              {
+                question: "Which validation technique ensures data falls within acceptable limits?",
+                options: [
+                  "Field Check",
+                  "Range Check",
+                  "Completeness Check",
+                  "Validity Check"
+                ],
+                correct: 1,
+                explanation: "Range Check verifies that numeric values fall within predetermined minimum and maximum limits."
+              },
+              {
+                question: "A sales invoice is an example of a:",
+                options: [
+                  "Master file",
+                  "Summary report",
+                  "Source document",
+                  "Data dictionary"
+                ],
+                correct: 2,
+                explanation: "A sales invoice is a source document that provides original evidence of a sales transaction."
+              },
+              {
+                question: "What is the correct sequence in transaction processing?",
+                options: [
+                  "Storage → Input → Processing → Output",
+                  "Input → Validation → Processing → Storage → Output",
+                  "Processing → Input → Storage → Output",
+                  "Output → Processing → Storage → Input"
+                ],
+                correct: 1,
+                explanation: "The correct TPS cycle is: Input → Validation → Processing → Storage → Output."
+              }
+            ]
+          }
+        },
+        {
+          id: 4,
+          title: "Documentation Techniques in AIS",
+          icon: "📐",
+          topics: [
+            "Flowcharts",
+            "Data Flow Diagrams (DFD)",
+            "Business Process Modeling Notation (BPMN)"
+          ],
+          content: {
+            overview: `
+              <h3 class="text-2xl font-bold text-white mb-6">📌 Week 4: Documentation Techniques in AIS</h3>
+              
+              <div class="space-y-6">
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🎯 Why Documentation Matters</h4>
+                  <p class="text-slate-300 leading-relaxed mb-4">
+                    Documentation techniques help us visualize, communicate, and analyze business processes and system designs. They are essential for system development, auditing, and process improvement.
+                  </p>
+                  <div class="grid md:grid-cols-3 gap-4">
+                    <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                      <div class="text-2xl mb-2">📋</div>
+                      <p class="text-sm text-white font-medium">Communication</p>
+                      <p class="text-xs text-slate-400">Share complex ideas clearly</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                      <div class="text-2xl mb-2">🔍</div>
+                      <p class="text-sm text-white font-medium">Analysis</p>
+                      <p class="text-xs text-slate-400">Identify inefficiencies</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4 text-center">
+                      <div class="text-2xl mb-2">📖</div>
+                      <p class="text-sm text-white font-medium">Training</p>
+                      <p class="text-xs text-slate-400">Onboard new employees</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">📊 Flowcharts</h4>
+                  <p class="text-slate-300 mb-4">Flowcharts use standardized symbols to represent the sequence of steps in a process.</p>
+                  
+                  <div class="bg-slate-800/50 rounded-xl p-4 mb-4">
+                    <h5 class="font-semibold text-white mb-3">Common Flowchart Symbols:</h5>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div class="text-center">
+                        <div class="w-16 h-10 bg-indigo-500/30 border-2 border-indigo-400 rounded-full mx-auto mb-2 flex items-center justify-center text-xs text-indigo-300">Start/End</div>
+                        <p class="text-xs text-slate-400">Terminal</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-16 h-10 bg-green-500/30 border-2 border-green-400 mx-auto mb-2 flex items-center justify-center text-xs text-green-300">Process</div>
+                        <p class="text-xs text-slate-400">Rectangle</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-16 h-10 bg-yellow-500/30 border-2 border-yellow-400 mx-auto mb-2 flex items-center justify-center text-xs text-yellow-300 transform rotate-45 scale-75">
+                          <span class="transform -rotate-45">Decision</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Diamond</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-16 h-10 bg-purple-500/30 border-2 border-purple-400 mx-auto mb-2 flex items-center justify-center text-xs text-purple-300" style="border-left-width: 4px; clip-path: polygon(0 0, 80% 0, 100% 50%, 80% 100%, 0 100%);">Data</div>
+                        <p class="text-xs text-slate-400">Parallelogram</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-blue-900/30 rounded-xl p-4 border border-blue-500/30">
+                      <h6 class="font-semibold text-blue-300 mb-2">System Flowchart</h6>
+                      <p class="text-sm text-slate-400">Shows how data flows through an entire system, including hardware and files</p>
+                    </div>
+                    <div class="bg-green-900/30 rounded-xl p-4 border border-green-500/30">
+                      <h6 class="font-semibold text-green-300 mb-2">Document Flowchart</h6>
+                      <p class="text-sm text-slate-400">Traces the flow of documents through departments</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🔄 Data Flow Diagrams (DFD)</h4>
+                  <p class="text-slate-300 mb-4">DFDs show how data moves through a system, focusing on processes, data stores, and external entities.</p>
+                  
+                  <div class="bg-slate-800/50 rounded-xl p-4 mb-4">
+                    <h5 class="font-semibold text-white mb-3">DFD Components:</h5>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div class="text-center">
+                        <div class="w-16 h-16 bg-indigo-500/30 border-2 border-indigo-400 rounded-full mx-auto mb-2 flex items-center justify-center text-xs text-indigo-300">Process</div>
+                        <p class="text-xs text-slate-400">Circle</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-20 h-8 bg-green-500/30 border-b-2 border-t-2 border-green-400 mx-auto mb-2 mt-4 flex items-center justify-center text-xs text-green-300">Data Store</div>
+                        <p class="text-xs text-slate-400">Open Rectangle</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-16 h-12 bg-orange-500/30 border-2 border-orange-400 mx-auto mb-2 flex items-center justify-center text-xs text-orange-300">Entity</div>
+                        <p class="text-xs text-slate-400">Rectangle</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-16 h-1 bg-purple-400 mx-auto mb-2 mt-6 relative">
+                          <div class="absolute right-0 top-1/2 transform -translate-y-1/2 border-t-4 border-b-4 border-l-8 border-transparent border-l-purple-400"></div>
+                        </div>
+                        <p class="text-xs text-slate-400">Data Flow (Arrow)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-slate-800/50 rounded-xl p-4">
+                    <h5 class="font-semibold text-white mb-2">DFD Levels:</h5>
+                    <ul class="space-y-2 text-sm text-slate-300">
+                      <li><span class="text-indigo-400 font-semibold">Level 0 (Context):</span> Shows entire system as single process</li>
+                      <li><span class="text-indigo-400 font-semibold">Level 1:</span> Breaks down into major processes</li>
+                      <li><span class="text-indigo-400 font-semibold">Level 2+:</span> Further decomposition of each process</li>
+                    </ul>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">📋 Business Process Modeling Notation (BPMN)</h4>
+                  <p class="text-slate-300 mb-4">BPMN is a standardized graphical notation for documenting business processes in a workflow.</p>
+                  
+                  <div class="bg-slate-800/50 rounded-xl p-4 mb-4">
+                    <h5 class="font-semibold text-white mb-3">Key BPMN Elements:</h5>
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div class="text-center">
+                        <div class="w-10 h-10 bg-green-500/30 border-2 border-green-400 rounded-full mx-auto mb-2"></div>
+                        <p class="text-xs text-slate-400">Start Event</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-10 h-10 bg-red-500/30 border-4 border-red-400 rounded-full mx-auto mb-2"></div>
+                        <p class="text-xs text-slate-400">End Event</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-16 h-10 bg-blue-500/30 border-2 border-blue-400 rounded-lg mx-auto mb-2"></div>
+                        <p class="text-xs text-slate-400">Task</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-10 h-10 bg-yellow-500/30 border-2 border-yellow-400 mx-auto mb-2 transform rotate-45"></div>
+                        <p class="text-xs text-slate-400">Gateway</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h6 class="font-semibold text-white mb-2">Swim Lanes</h6>
+                      <p class="text-sm text-slate-400">Horizontal lanes that show which department or role performs each activity</p>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h6 class="font-semibold text-white mb-2">Pools</h6>
+                      <p class="text-sm text-slate-400">Containers that represent separate organizations or major systems</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">⚖️ Choosing the Right Technique</h4>
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead>
+                        <tr class="border-b border-slate-600">
+                          <th class="text-left py-3 px-4 text-indigo-300">Technique</th>
+                          <th class="text-left py-3 px-4 text-indigo-300">Best Used For</th>
+                          <th class="text-left py-3 px-4 text-indigo-300">Focus</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-slate-300">
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Flowchart</td>
+                          <td class="py-3 px-4">Process logic & document flow</td>
+                          <td class="py-3 px-4">Steps & decisions</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">DFD</td>
+                          <td class="py-3 px-4">System analysis & design</td>
+                          <td class="py-3 px-4">Data transformation</td>
+                        </tr>
+                        <tr>
+                          <td class="py-3 px-4 font-medium text-white">BPMN</td>
+                          <td class="py-3 px-4">Business process management</td>
+                          <td class="py-3 px-4">Workflow & responsibilities</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-2xl p-6 border border-indigo-500/30">
+                  <h4 class="text-lg font-semibold text-white mb-3">💡 Key Takeaways</h4>
+                  <ul class="space-y-2 text-slate-300">
+                    <li>• Flowcharts show the sequence of steps in a process</li>
+                    <li>• DFDs focus on how data transforms through systems</li>
+                    <li>• BPMN is the industry standard for business process documentation</li>
+                    <li>• Choose the technique based on your documentation purpose</li>
+                  </ul>
+                </div>
+              </div>
+            `,
+            activity: `
+              <h3 class="text-2xl font-bold text-white mb-6">🎮 Week 4 Activity: Symbol Recognition Challenge</h3>
+              
+              <div class="card-gradient rounded-2xl p-6 border border-slate-600/30 mb-6">
+                <h4 class="text-lg font-semibold text-indigo-400 mb-4">Instructions</h4>
+                <p class="text-slate-300 mb-4">Identify the correct name for each documentation symbol shown. Click on the correct answer for each symbol!</p>
+              </div>
+
+              <div id="symbol-activity" class="space-y-6">
+                <div id="symbol-questions" class="grid md:grid-cols-2 gap-6">
+                  <!-- Symbol questions will be generated -->
+                </div>
+                
+                <div id="symbol-score" class="bg-slate-800/50 rounded-xl p-4 text-center">
+                  <p class="text-lg">Score: <span id="symbol-correct" class="text-green-400 font-bold">0</span> / <span id="symbol-total">6</span></p>
+                </div>
+                
+                <div id="symbol-feedback" class="hidden">
+                  <div class="bg-green-900/30 rounded-xl p-4 border border-green-500/30">
+                    <p class="text-green-400 font-semibold">🎉 Perfect! You've identified all documentation symbols correctly!</p>
+                  </div>
+                </div>
+                
+                <button onclick="resetSymbolActivity()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-all">
+                  🔄 Reset Activity
+                </button>
+              </div>
+            `,
+            quiz: [
+              {
+                question: "Which symbol is used to represent a decision point in a flowchart?",
+                options: [
+                  "Rectangle",
+                  "Circle",
+                  "Diamond",
+                  "Parallelogram"
+                ],
+                correct: 2,
+                explanation: "A diamond shape represents a decision point where the process can take different paths based on a condition."
+              },
+              {
+                question: "In a DFD, what does a circle represent?",
+                options: [
+                  "External entity",
+                  "Data store",
+                  "Process",
+                  "Data flow"
+                ],
+                correct: 2,
+                explanation: "In DFD notation, a circle (or rounded rectangle in some notations) represents a process that transforms data."
+              },
+              {
+                question: "What is the purpose of swim lanes in BPMN?",
+                options: [
+                  "To show data stores",
+                  "To indicate who performs each activity",
+                  "To represent decisions",
+                  "To show data flows"
+                ],
+                correct: 1,
+                explanation: "Swim lanes in BPMN organize activities by the role, department, or system responsible for performing them."
+              },
+              {
+                question: "A Context Diagram (Level 0 DFD) shows:",
+                options: [
+                  "Detailed process steps",
+                  "Database structure",
+                  "The entire system as a single process",
+                  "Individual transactions"
+                ],
+                correct: 2,
+                explanation: "A Context Diagram (Level 0) shows the entire system as one process, focusing on external entities and main data flows."
+              },
+              {
+                question: "Which documentation technique is best for showing data transformation through a system?",
+                options: [
+                  "Flowchart",
+                  "BPMN",
+                  "DFD",
+                  "Organization Chart"
+                ],
+                correct: 2,
+                explanation: "Data Flow Diagrams (DFDs) are specifically designed to show how data is transformed as it moves through a system."
+              }
+            ]
+          }
+        },
+        {
+          id: 5,
+          title: "Database Design for AIS",
+          icon: "🗄️",
+          topics: [
+            "AIS Database Concepts",
+            "Entity Relationship Diagram (ERD)",
+            "Relational database design"
+          ],
+          content: {
+            overview: `
+              <h3 class="text-2xl font-bold text-white mb-6">📌 Week 5: Database Design for AIS</h3>
+              
+              <div class="space-y-6">
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">💾 AIS Database Concepts</h4>
+                  <p class="text-slate-300 leading-relaxed mb-4">
+                    A <strong class="text-white">database</strong> is an organized collection of related data stored electronically. In AIS, databases are the backbone that stores all financial and accounting information.
+                  </p>
+                  
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-white mb-2">File-Based vs Database Systems</h5>
+                      <div class="space-y-2 text-sm">
+                        <div class="flex items-start gap-2">
+                          <span class="text-red-400">✗</span>
+                          <span class="text-slate-400">File-based: Data redundancy, inconsistency</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                          <span class="text-green-400">✓</span>
+                          <span class="text-slate-400">Database: Centralized, consistent data</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-white mb-2">Database Management System (DBMS)</h5>
+                      <p class="text-sm text-slate-400">Software that manages database creation, access, and security</p>
+                      <p class="text-xs text-indigo-400 mt-2">Examples: MySQL, Oracle, SQL Server, PostgreSQL</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🔑 Key Database Terminology</h4>
+                  
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-sm">
+                      <thead>
+                        <tr class="border-b border-slate-600">
+                          <th class="text-left py-3 px-4 text-indigo-300">Term</th>
+                          <th class="text-left py-3 px-4 text-indigo-300">Definition</th>
+                          <th class="text-left py-3 px-4 text-indigo-300">Example</th>
+                        </tr>
+                      </thead>
+                      <tbody class="text-slate-300">
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Table (Entity)</td>
+                          <td class="py-3 px-4">Collection of related records</td>
+                          <td class="py-3 px-4">CUSTOMERS, INVOICES</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Record (Row)</td>
+                          <td class="py-3 px-4">Single instance of data</td>
+                          <td class="py-3 px-4">One customer's info</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Field (Column)</td>
+                          <td class="py-3 px-4">Single data attribute</td>
+                          <td class="py-3 px-4">Customer_Name, Email</td>
+                        </tr>
+                        <tr class="border-b border-slate-700/50">
+                          <td class="py-3 px-4 font-medium text-white">Primary Key (PK)</td>
+                          <td class="py-3 px-4">Unique identifier for each record</td>
+                          <td class="py-3 px-4">Customer_ID</td>
+                        </tr>
+                        <tr>
+                          <td class="py-3 px-4 font-medium text-white">Foreign Key (FK)</td>
+                          <td class="py-3 px-4">Links to another table's PK</td>
+                          <td class="py-3 px-4">Invoice.Customer_ID</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">📊 Entity Relationship Diagrams (ERD)</h4>
+                  <p class="text-slate-300 mb-4">ERDs visually represent database structure, showing entities, their attributes, and relationships between them.</p>
+                  
+                  <div class="bg-slate-800/50 rounded-xl p-4 mb-4">
+                    <h5 class="font-semibold text-white mb-3">ERD Components:</h5>
+                    <div class="grid grid-cols-3 gap-4">
+                      <div class="text-center">
+                        <div class="w-20 h-12 bg-indigo-500/30 border-2 border-indigo-400 mx-auto mb-2 flex items-center justify-center text-xs text-indigo-300">CUSTOMER</div>
+                        <p class="text-xs text-slate-400">Entity (Rectangle)</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-16 h-10 bg-green-500/30 border-2 border-green-400 rounded-full mx-auto mb-2 flex items-center justify-center text-xs text-green-300">Name</div>
+                        <p class="text-xs text-slate-400">Attribute (Oval)</p>
+                      </div>
+                      <div class="text-center">
+                        <div class="w-16 h-10 bg-yellow-500/30 border-2 border-yellow-400 mx-auto mb-2 flex items-center justify-center text-xs text-yellow-300 transform rotate-45 scale-90">
+                          <span class="transform -rotate-45">Places</span>
+                        </div>
+                        <p class="text-xs text-slate-400">Relationship (Diamond)</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="bg-slate-800/50 rounded-xl p-4">
+                    <h5 class="font-semibold text-white mb-3">Cardinality (Relationship Types):</h5>
+                    <div class="space-y-3">
+                      <div class="flex items-center gap-3">
+                        <span class="bg-blue-900/50 px-3 py-1 rounded text-blue-300 text-sm font-mono">1:1</span>
+                        <span class="text-slate-400 text-sm">One-to-One (e.g., Employee has one Office)</span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <span class="bg-green-900/50 px-3 py-1 rounded text-green-300 text-sm font-mono">1:M</span>
+                        <span class="text-slate-400 text-sm">One-to-Many (e.g., Customer places many Orders)</span>
+                      </div>
+                      <div class="flex items-center gap-3">
+                        <span class="bg-purple-900/50 px-3 py-1 rounded text-purple-300 text-sm font-mono">M:N</span>
+                        <span class="text-slate-400 text-sm">Many-to-Many (e.g., Students enroll in Courses)</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">🏗️ Relational Database Design</h4>
+                  <p class="text-slate-300 mb-4">Good database design follows principles that ensure data integrity and efficiency.</p>
+                  
+                  <div class="space-y-4">
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-white mb-2">Normalization</h5>
+                      <p class="text-sm text-slate-400 mb-3">Process of organizing data to reduce redundancy</p>
+                      <div class="space-y-2 text-sm">
+                        <div class="flex items-start gap-2">
+                          <span class="bg-indigo-900/50 px-2 py-1 rounded text-indigo-300 text-xs font-mono">1NF</span>
+                          <span class="text-slate-400">Eliminate repeating groups (atomic values only)</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                          <span class="bg-indigo-900/50 px-2 py-1 rounded text-indigo-300 text-xs font-mono">2NF</span>
+                          <span class="text-slate-400">Remove partial dependencies (all non-key attributes depend on full PK)</span>
+                        </div>
+                        <div class="flex items-start gap-2">
+                          <span class="bg-indigo-900/50 px-2 py-1 rounded text-indigo-300 text-xs font-mono">3NF</span>
+                          <span class="text-slate-400">Remove transitive dependencies (non-key attributes depend only on PK)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="bg-slate-800/50 rounded-xl p-4">
+                      <h5 class="font-semibold text-white mb-3">Sample AIS Database Schema:</h5>
+                      <div class="font-mono text-xs space-y-2 overflow-x-auto">
+                        <div class="bg-slate-900/50 p-2 rounded">
+                          <span class="text-blue-400">CUSTOMERS</span>
+                          (<span class="text-yellow-400 underline">CustomerID</span>, Name, Address, Phone, Email)
+                        </div>
+                        <div class="bg-slate-900/50 p-2 rounded">
+                          <span class="text-blue-400">INVOICES</span>
+                          (<span class="text-yellow-400 underline">InvoiceID</span>, <span class="text-green-400">CustomerID</span>, Date, Total, Status)
+                        </div>
+                        <div class="bg-slate-900/50 p-2 rounded">
+                          <span class="text-blue-400">INVOICE_ITEMS</span>
+                          (<span class="text-yellow-400 underline">ItemID</span>, <span class="text-green-400">InvoiceID</span>, <span class="text-green-400">ProductID</span>, Qty, Price)
+                        </div>
+                        <div class="bg-slate-900/50 p-2 rounded">
+                          <span class="text-blue-400">PRODUCTS</span>
+                          (<span class="text-yellow-400 underline">ProductID</span>, Name, Description, UnitPrice, Stock)
+                        </div>
+                      </div>
+                      <p class="text-xs text-slate-500 mt-2"><span class="text-yellow-400">Underlined</span> = Primary Key | <span class="text-green-400">Green</span> = Foreign Key</p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+                  <h4 class="text-lg font-semibold text-indigo-400 mb-3">✅ Benefits of Good Database Design</h4>
+                  <div class="grid md:grid-cols-2 gap-4">
+                    <div class="flex items-start gap-3">
+                      <span class="text-green-400 text-xl">🔒</span>
+                      <div>
+                        <p class="font-medium text-white">Data Integrity</p>
+                        <p class="text-sm text-slate-400">Ensures accuracy and consistency</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-green-400 text-xl">💨</span>
+                      <div>
+                        <p class="font-medium text-white">Reduced Redundancy</p>
+                        <p class="text-sm text-slate-400">Data stored only once</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-green-400 text-xl">🔄</span>
+                      <div>
+                        <p class="font-medium text-white">Easy Maintenance</p>
+                        <p class="text-sm text-slate-400">Updates in one place</p>
+                      </div>
+                    </div>
+                    <div class="flex items-start gap-3">
+                      <span class="text-green-400 text-xl">📈</span>
+                      <div>
+                        <p class="font-medium text-white">Scalability</p>
+                        <p class="text-sm text-slate-400">Grows with the business</p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-gradient-to-r from-indigo-900/50 to-purple-900/50 rounded-2xl p-6 border border-indigo-500/30">
+                  <h4 class="text-lg font-semibold text-white mb-3">💡 Key Takeaways</h4>
+                  <ul class="space-y-2 text-slate-300">
+                    <li>• Databases are the foundation of modern AIS</li>
+                    <li>• ERDs help visualize database structure before implementation</li>
+                    <li>• Primary and foreign keys maintain relationships between tables</li>
+                    <li>• Normalization reduces redundancy and improves data integrity</li>
+                  </ul>
+                </div>
+              </div>
+            `,
+            activity: `
+              <h3 class="text-2xl font-bold text-white mb-6">🎮 Week 5 Activity: Design Your Own ERD</h3>
+              
+              <div class="card-gradient rounded-2xl p-6 border border-slate-600/30 mb-6">
+                <h4 class="text-lg font-semibold text-indigo-400 mb-4">Scenario: Simple Sales System</h4>
+                <p class="text-slate-300 mb-4">Based on the requirements below, identify the correct entities, attributes, and relationships to complete the ERD design.</p>
+                <div class="bg-slate-800/50 rounded-xl p-4 text-sm text-slate-400">
+                  <p class="mb-2"><strong class="text-white">Requirements:</strong></p>
+                  <ul class="list-disc list-inside space-y-1">
+                    <li>Track customers (ID, name, email)</li>
+                    <li>Record orders (ID, date, total)</li>
+                    <li>Each customer can place many orders</li>
+                    <li>Each order belongs to one customer</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div id="erd-activity" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                  <div class="bg-slate-800/50 rounded-xl p-4">
+                    <h5 class="font-semibold text-white mb-4">Step 1: Identify Entities</h5>
+                    <p class="text-sm text-slate-400 mb-3">Select all entities needed:</p>
+                    <div class="space-y-2" id="entity-options">
+                      <button onclick="toggleERDOption(this, 'entity', 'CUSTOMER')" class="w-full text-left px-4 py-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-option">
+                        📦 CUSTOMER
+                      </button>
+                      <button onclick="toggleERDOption(this, 'entity', 'ORDER')" class="w-full text-left px-4 py-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-option">
+                        📋 ORDER
+                      </button>
+                      <button onclick="toggleERDOption(this, 'entity', 'PRODUCT')" class="w-full text-left px-4 py-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-option">
+                        🏷️ PRODUCT
+                      </button>
+                      <button onclick="toggleERDOption(this, 'entity', 'EMPLOYEE')" class="w-full text-left px-4 py-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-option">
+                        👤 EMPLOYEE
+                      </button>
+                    </div>
+                  </div>
+                  
+                  <div class="bg-slate-800/50 rounded-xl p-4">
+                    <h5 class="font-semibold text-white mb-4">Step 2: Identify Relationship</h5>
+                    <p class="text-sm text-slate-400 mb-3">What cardinality exists between CUSTOMER and ORDER?</p>
+                    <div class="space-y-2" id="relationship-options">
+                      <button onclick="selectERDRelation(this, '1:1')" class="w-full text-left px-4 py-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-relation">
+                        1:1 (One-to-One)
+                      </button>
+                      <button onclick="selectERDRelation(this, '1:M')" class="w-full text-left px-4 py-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-relation">
+                        1:M (One-to-Many)
+                      </button>
+                      <button onclick="selectERDRelation(this, 'M:N')" class="w-full text-left px-4 py-2 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-relation">
+                        M:N (Many-to-Many)
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="bg-slate-800/50 rounded-xl p-4">
+                  <h5 class="font-semibold text-white mb-4">Step 3: Identify Foreign Key</h5>
+                  <p class="text-sm text-slate-400 mb-3">Which table should contain the foreign key?</p>
+                  <div class="flex gap-4" id="fk-options">
+                    <button onclick="selectERDFK(this, 'CUSTOMER')" class="flex-1 px-4 py-3 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-fk">
+                      CUSTOMER table (with OrderID)
+                    </button>
+                    <button onclick="selectERDFK(this, 'ORDER')" class="flex-1 px-4 py-3 bg-slate-700/50 rounded-lg hover:bg-slate-600/50 transition-all text-sm erd-fk">
+                      ORDER table (with CustomerID)
+                    </button>
+                  </div>
+                </div>
+
+                <button onclick="checkERDAnswers()" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl font-medium transition-all mr-3">
+                  ✓ Check My Design
+                </button>
+                <button onclick="resetERDActivity()" class="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-xl font-medium transition-all">
+                  🔄 Reset Activity
+                </button>
+
+                <div id="erd-feedback" class="hidden mt-6">
+                  <!-- Feedback will appear here -->
+                </div>
+              </div>
+            `,
+            quiz: [
+              {
+                question: "A primary key is used to:",
+                options: [
+                  "Link to another table",
+                  "Uniquely identify each record in a table",
+                  "Store multiple values",
+                  "Calculate totals"
+                ],
+                correct: 1,
+                explanation: "A primary key uniquely identifies each record (row) in a database table, ensuring no duplicates."
+              },
+              {
+                question: "In an ERD, a diamond shape represents:",
+                options: [
+                  "An entity",
+                  "An attribute",
+                  "A relationship",
+                  "A primary key"
+                ],
+                correct: 2,
+                explanation: "In ERD notation, diamonds represent relationships between entities."
+              },
+              {
+                question: "If one customer can place many orders, but each order belongs to only one customer, the cardinality is:",
+                options: [
+                  "1:1",
+                  "1:M",
+                  "M:N",
+                  "M:1"
+                ],
+                correct: 1,
+                explanation: "This is a One-to-Many (1:M) relationship - one customer to many orders."
+              },
+              {
+                question: "Which normal form eliminates repeating groups?",
+                options: [
+                  "First Normal Form (1NF)",
+                  "Second Normal Form (2NF)",
+                  "Third Normal Form (3NF)",
+                  "Fourth Normal Form (4NF)"
+                ],
+                correct: 0,
+                explanation: "First Normal Form (1NF) requires that each column contains only atomic (indivisible) values with no repeating groups."
+              },
+              {
+                question: "A foreign key is:",
+                options: [
+                  "A unique identifier for each row",
+                  "A field that links to the primary key of another table",
+                  "The first field in a table",
+                  "An encrypted field"
+                ],
+                correct: 1,
+                explanation: "A foreign key is a field in one table that references the primary key of another table, creating a relationship between them."
+              }
+            ]
+          }
+        }
+      ]
+    };
+
+    // State Management
+    let currentWeek = 1;
+    let currentSection = 'lesson';
+    let quizState = {};
+    let completedWeeks = new Set();
+    
+    // Week 1 Activity State
+    let matchingState = { selected: null, matches: {} };
+    const matchingPairs = [
+      { scenario: "Accountant entering invoice data", component: "People" },
+      { scenario: "Step-by-step guide for monthly closing", component: "Procedures" },
+      { scenario: "Customer transaction records", component: "Data" },
+      { scenario: "QuickBooks or SAP application", component: "Software" },
+      { scenario: "Company servers and network", component: "IT Infrastructure" }
+    ];
+
+    // Week 2 Activity State
+    const cycleActivities = [
+      { text: "Recording customer payment", cycle: "revenue" },
+      { text: "Processing employee salaries", cycle: "hr" },
+      { text: "Ordering raw materials", cycle: "expenditure" },
+      { text: "Issuing sales invoice", cycle: "revenue" },
+      { text: "Paying supplier bills", cycle: "expenditure" },
+      { text: "Hiring new staff", cycle: "hr" }
+    ];
+
+    // Week 3 Activity State
+    let foundDocElements = new Set();
+    const docElements = ['Invoice Number', 'Customer Name', 'Transaction Date', 'Quantity', 'Unit Price', 'Item Description', 'Total Amount'];
+
+    // Week 4 Activity State
+    const symbolQuestions = [
+      { shape: 'circle', type: 'flowchart', answer: 'Terminal/Start-End', options: ['Terminal/Start-End', 'Process', 'Decision', 'Data Store'] },
+      { shape: 'rectangle', type: 'flowchart', answer: 'Process', options: ['Terminal', 'Process', 'Decision', 'Data Flow'] },
+      { shape: 'diamond', type: 'flowchart', answer: 'Decision', options: ['Process', 'Data', 'Decision', 'Entity'] },
+      { shape: 'dfd-circle', type: 'dfd', answer: 'Process (DFD)', options: ['Entity', 'Process (DFD)', 'Data Store', 'Terminal'] },
+      { shape: 'dfd-rectangle', type: 'dfd', answer: 'External Entity', options: ['Process', 'External Entity', 'Data Flow', 'Decision'] },
+      { shape: 'bpmn-gateway', type: 'bpmn', answer: 'Gateway (BPMN)', options: ['Start Event', 'Task', 'Gateway (BPMN)', 'End Event'] }
+    ];
+    let symbolAnswers = {};
+
+    // Week 5 Activity State
+    let erdState = { entities: new Set(), relation: null, fk: null };
+
+    // Config for editable elements
+    const defaultConfig = {
+      course_title: 'Accounting Information Systems',
+      instructor_name: '5-Week Comprehensive Course'
+    };
+
+    // Initialize SDK
+    if (window.elementSdk) {
+      window.elementSdk.init({
+        defaultConfig,
+        onConfigChange: async (config) => {
+          const title = config.course_title || defaultConfig.course_title;
+          const instructor = config.instructor_name || defaultConfig.instructor_name;
+          
+          document.getElementById('course-title').textContent = title;
+          document.getElementById('instructor-display').textContent = instructor;
+        },
+        mapToCapabilities: (config) => ({
+          recolorables: [],
+          borderables: [],
+          fontEditable: undefined,
+          fontSizeable: undefined
+        }),
+        mapToEditPanelValues: (config) => new Map([
+          ['course_title', config.course_title || defaultConfig.course_title],
+          ['instructor_name', config.instructor_name || defaultConfig.instructor_name]
+        ])
+      });
+    }
+
+    // Initialize Application
+    function init() {
+      renderWeekTabs();
+      loadWeekContent(1);
+      updateProgress();
+    }
+
+    // Render Week Tabs
+    function renderWeekTabs() {
+      const container = document.getElementById('week-tabs');
+      container.innerHTML = courseData.weeks.map(week => `
+        <button 
+          onclick="selectWeek(${week.id})" 
+          class="week-tab flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-medium whitespace-nowrap
+            ${currentWeek === week.id ? 'active text-white' : 'bg-slate-700/50 text-slate-300 hover:bg-slate-600/50'}"
+          id="week-tab-${week.id}"
+        >
+          <span>${week.icon}</span>
+          <span>Week ${week.id}</span>
+          ${completedWeeks.has(week.id) ? '<span class="text-green-400">✓</span>' : ''}
+        </button>
+      `).join('');
+    }
+
+    // Select Week
+    function selectWeek(weekId) {
+      currentWeek = weekId;
+      currentSection = 'lesson';
+      renderWeekTabs();
+      loadWeekContent(weekId);
+    }
+
+    // Load Week Content
+    function loadWeekContent(weekId) {
+      const week = courseData.weeks.find(w => w.id === weekId);
+      const contentArea = document.getElementById('content-area');
+      
+      contentArea.innerHTML = `
+        <div class="slide-up">
+          <div class="mb-8">
+            <div class="flex items-center gap-4 mb-4">
+              <div class="w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-3xl glow-effect">
+                ${week.icon}
+              </div>
+              <div>
+                <h2 class="text-2xl font-bold text-white">Week ${week.id}</h2>
+                <p class="text-slate-400">${week.title}</p>
+              </div>
+            </div>
+            
+            <div class="flex flex-wrap gap-2 mb-6">
+              ${week.topics.map(topic => `
+                <span class="px-3 py-1 bg-slate-700/50 rounded-full text-sm text-slate-300">${topic}</span>
+              `).join('')}
+            </div>
+            
+            <div class="flex gap-3 border-b border-slate-700 pb-4">
+              <button 
+                onclick="showSection('lesson')" 
+                class="section-btn px-6 py-3 rounded-xl font-medium transition-all border-2
+                  ${currentSection === 'lesson' ? 'active border-indigo-500 text-white' : 'border-slate-600 text-slate-400 hover:text-white'}"
+              >
+                📚 Lesson
+              </button>
+              <button 
+                onclick="showSection('activity')" 
+                class="section-btn px-6 py-3 rounded-xl font-medium transition-all border-2
+                  ${currentSection === 'activity' ? 'active border-indigo-500 text-white' : 'border-slate-600 text-slate-400 hover:text-white'}"
+              >
+                🎮 Activity
+              </button>
+              <button 
+                onclick="showSection('quiz')" 
+                class="section-btn px-6 py-3 rounded-xl font-medium transition-all border-2
+                  ${currentSection === 'quiz' ? 'active border-indigo-500 text-white' : 'border-slate-600 text-slate-400 hover:text-white'}"
+              >
+                📝 Quiz
+              </button>
+            </div>
+          </div>
+          
+          <div id="section-content" class="fade-in">
+            ${getSectionContent(week)}
+          </div>
+        </div>
+      `;
+      
+      // Initialize activity if needed
+      if (currentSection === 'activity') {
+        initializeActivity(weekId);
+      }
+    }
+
+    // Show Section
+    function showSection(section) {
+      currentSection = section;
+      loadWeekContent(currentWeek);
+    }
+
+    // Get Section Content
+    function getSectionContent(week) {
+      switch (currentSection) {
+        case 'lesson':
+          return week.content.overview;
+        case 'activity':
+          return week.content.activity;
+        case 'quiz':
+          return renderQuiz(week);
+        default:
+          return week.content.overview;
+      }
+    }
+
+    // Initialize Activity
+    function initializeActivity(weekId) {
+      switch (weekId) {
+        case 1:
+          initMatchingGame();
+          break;
+        case 2:
+          initCycleGame();
+          break;
+        case 3:
+          // Document activity is click-based, no init needed
+          break;
+        case 4:
+          initSymbolActivity();
+          break;
+        case 5:
+          // ERD activity is click-based, no init needed
+          break;
+      }
+    }
+
+    // Week 1: Matching Game
+    function initMatchingGame() {
+      matchingState = { selected: null, matches: {} };
+      const scenarios = document.getElementById('scenarios');
+      const components = document.getElementById('components');
+      
+      if (!scenarios || !components) return;
+      
+      const shuffledComponents = [...matchingPairs.map(p => p.component)].sort(() => Math.random() - 0.5);
+      
+      scenarios.innerHTML = matchingPairs.map((pair, i) => `
+        <button 
+          onclick="selectMatchItem(this, 'scenario', ${i})"
+          class="w-full text-left px-4 py-3 bg-slate-700/50 rounded-xl text-sm text-slate-300 hover:bg-slate-600/50 transition-all match-item"
+          data-index="${i}"
+          data-type="scenario"
+        >
+          ${pair.scenario}
+        </button>
+      `).join('');
+      
+      components.innerHTML = shuffledComponents.map((comp, i) => `
+        <button 
+          onclick="selectMatchItem(this, 'component', '${comp}')"
+          class="w-full text-left px-4 py-3 bg-indigo-900/30 rounded-xl text-sm text-indigo-300 hover:bg-indigo-800/30 transition-all match-item"
+          data-value="${comp}"
+          data-type="component"
+        >
+          ${comp}
+        </button>
+      `).join('');
+    }
+
+    function selectMatchItem(el, type, value) {
+      if (el.classList.contains('matched')) return;
+      
+      document.querySelectorAll(`.match-item[data-type="${type}"]`).forEach(item => {
+        if (!item.classList.contains('matched')) {
+          item.classList.remove('ring-2', 'ring-indigo-400');
+        }
+      });
+      
+      el.classList.add('ring-2', 'ring-indigo-400');
+      
+      if (type === 'scenario') {
+        matchingState.selected = { type, index: value };
+      } else {
+        if (matchingState.selected && matchingState.selected.type === 'scenario') {
+          const scenarioIndex = matchingState.selected.index;
+          const correctComponent = matchingPairs[scenarioIndex].component;
+          
+          if (value === correctComponent) {
+            // Correct match
+            const scenarioEl = document.querySelector(`.match-item[data-type="scenario"][data-index="${scenarioIndex}"]`);
+            scenarioEl.classList.add('matched', 'bg-green-900/30', 'text-green-300');
+            scenarioEl.classList.remove('ring-2', 'ring-indigo-400');
+            el.classList.add('matched', 'bg-green-900/30', 'text-green-300');
+            el.classList.remove('ring-2', 'ring-indigo-400');
+            matchingState.matches[scenarioIndex] = value;
+            
+            if (Object.keys(matchingState.matches).length === matchingPairs.length) {
+              document.getElementById('game-feedback').classList.remove('hidden');
+            }
+          }
+          matchingState.selected = null;
+        }
+      }
+    }
+
+    function resetMatchingGame() {
+      initMatchingGame();
+      document.getElementById('game-feedback').classList.add('hidden');
+    }
+
+    // Week 2: Cycle Game
+    function initCycleGame() {
+      const pool = document.getElementById('activity-pool');
+      if (!pool) return;
+      
+      const shuffled = [...cycleActivities].sort(() => Math.random() - 0.5);
+      pool.innerHTML = shuffled.map((act, i) => `
+        <div 
+          class="cycle-activity px-4 py-2 bg-slate-700 rounded-lg text-sm cursor-move"
+          draggable="true"
+          data-cycle="${act.cycle}"
+          ondragstart="dragStart(event)"
+        >
+          ${act.text}
+        </div>
+      `).join('');
+      
+      // Clear drop zones
+      document.querySelectorAll('.cycle-drop').forEach(zone => {
+        zone.innerHTML = `<p class="text-slate-500 text-sm italic">Drop activities here...</p>`;
+      });
+      
+      document.getElementById('cycle-feedback').classList.add('hidden');
+    }
+
+    function dragStart(e) {
+      e.dataTransfer.setData('text/plain', e.target.outerHTML);
+      e.dataTransfer.setData('cycle', e.target.dataset.cycle);
+      setTimeout(() => e.target.remove(), 0);
+    }
+
+    document.addEventListener('dragover', (e) => {
+      if (e.target.classList.contains('cycle-drop')) {
+        e.preventDefault();
+        e.target.classList.add('ring-2', 'ring-indigo-400');
+      }
+    });
+
+    document.addEventListener('dragleave', (e) => {
+      if (e.target.classList.contains('cycle-drop')) {
+        e.target.classList.remove('ring-2', 'ring-indigo-400');
+      }
+    });
+
+    document.addEventListener('drop', (e) => {
+      if (e.target.classList.contains('cycle-drop')) {
+        e.preventDefault();
+        e.target.classList.remove('ring-2', 'ring-indigo-400');
+        
+        const html = e.dataTransfer.getData('text/plain');
+        const placeholder = e.target.querySelector('.italic');
+        if (placeholder) placeholder.remove();
+        
+        e.target.insertAdjacentHTML('beforeend', html);
+        
+        // Re-enable drag on dropped elements
+        e.target.querySelectorAll('.cycle-activity').forEach(el => {
+          el.setAttribute('draggable', 'true');
+          el.setAttribute('ondragstart', 'dragStart(event)');
+        });
+      }
+    });
+
+    function checkCycleAnswers() {
+      let allCorrect = true;
+      document.querySelectorAll('.cycle-drop').forEach(zone => {
+        const expectedCycle = zone.dataset.cycle;
+        zone.querySelectorAll('.cycle-activity').forEach(act => {
+          if (act.dataset.cycle === expectedCycle) {
+            act.classList.add('bg-green-700/50');
+          } else {
+            act.classList.add('bg-red-700/50');
+            allCorrect = false;
+          }
+        });
+      });
+      
+      if (allCorrect && document.querySelectorAll('.cycle-activity').length === cycleActivities.length) {
+        document.getElementById('cycle-feedback').classList.remove('hidden');
+      }
+    }
+
+    function resetCycleGame() {
+      initCycleGame();
+    }
+
+    // Week 3: Document Activity
+    function selectDocElement(el, name) {
+      if (foundDocElements.has(name)) return;
+      
+      foundDocElements.add(name);
+      el.classList.add('bg-yellow-200', 'rounded', 'px-1');
+      
+      const container = document.getElementById('found-elements');
+      container.innerHTML += `<span class="px-3 py-1 bg-green-900/30 text-green-400 rounded-full text-sm">${name}</span>`;
+      
+      document.getElementById('found-count').textContent = foundDocElements.size;
+      
+      if (foundDocElements.size === docElements.length) {
+        document.getElementById('doc-feedback').classList.remove('hidden');
+      }
+    }
+
+    function resetDocActivity() {
+      foundDocElements = new Set();
+      document.getElementById('found-count').textContent = '0';
+      document.getElementById('found-elements').innerHTML = '';
+      document.getElementById('doc-feedback').classList.add('hidden');
+      
+      docElements.forEach(name => {
+        const el = document.querySelector(`[onclick*="${name}"]`);
+        if (el) {
+          el.classList.remove('bg-yellow-200', 'rounded', 'px-1');
+        }
+      });
+    }
+
+    // Week 4: Symbol Activity
+    function initSymbolActivity() {
+      symbolAnswers = {};
+      const container = document.getElementById('symbol-questions');
+      if (!container) return;
+      
+      container.innerHTML = symbolQuestions.map((q, i) => `
+        <div class="bg-slate-800/50 rounded-xl p-4">
+          <div class="flex items-center gap-4 mb-4">
+            <div class="w-16 h-16 flex items-center justify-center">
+              ${getSymbolSVG(q.shape)}
+            </div>
+            <p class="text-sm text-slate-400">${q.type.toUpperCase()}</p>
+          </div>
+          <div class="space-y-2" id="symbol-q-${i}">
+            ${q.options.map(opt => `
+              <button 
+                onclick="selectSymbolAnswer(${i}, '${opt}')"
+                class="w-full text-left px-3 py-2 bg-slate-700/50 rounded-lg text-sm hover:bg-slate-600/50 transition-all symbol-option"
+              >
+                ${opt}
+              </button>
+            `).join('')}
+          </div>
+        </div>
+      `).join('');
+      
+      document.getElementById('symbol-correct').textContent = '0';
+      document.getElementById('symbol-feedback').classList.add('hidden');
+    }
+
+    function getSymbolSVG(shape) {
+      switch (shape) {
+        case 'circle':
+          return '<div class="w-12 h-8 bg-indigo-500/30 border-2 border-indigo-400 rounded-full"></div>';
+        case 'rectangle':
+          return '<div class="w-14 h-10 bg-green-500/30 border-2 border-green-400"></div>';
+        case 'diamond':
+          return '<div class="w-10 h-10 bg-yellow-500/30 border-2 border-yellow-400 transform rotate-45"></div>';
+        case 'dfd-circle':
+          return '<div class="w-12 h-12 bg-purple-500/30 border-2 border-purple-400 rounded-full"></div>';
+        case 'dfd-rectangle':
+          return '<div class="w-14 h-10 bg-orange-500/30 border-2 border-orange-400"></div>';
+        case 'bpmn-gateway':
+          return '<div class="w-10 h-10 bg-cyan-500/30 border-2 border-cyan-400 transform rotate-45"></div>';
+        default:
+          return '';
+      }
+    }
+
+    function selectSymbolAnswer(questionIndex, answer) {
+      const container = document.getElementById(`symbol-q-${questionIndex}`);
+      const correct = symbolQuestions[questionIndex].answer;
+      
+      container.querySelectorAll('.symbol-option').forEach(btn => {
+        btn.disabled = true;
+        if (btn.textContent.trim() === correct) {
+          btn.classList.add('bg-green-900/30', 'border', 'border-green-500');
+        } else if (btn.textContent.trim() === answer && answer !== correct) {
+          btn.classList.add('bg-red-900/30', 'border', 'border-red-500');
+        }
+      });
+      
+      symbolAnswers[questionIndex] = answer === correct;
+      
+      const correctCount = Object.values(symbolAnswers).filter(v => v).length;
+      document.getElementById('symbol-correct').textContent = correctCount;
+      
+      if (Object.keys(symbolAnswers).length === symbolQuestions.length) {
+        if (correctCount === symbolQuestions.length) {
+          document.getElementById('symbol-feedback').classList.remove('hidden');
+        }
+      }
+    }
+
+    function resetSymbolActivity() {
+      initSymbolActivity();
+    }
+
+    // Week 5: ERD Activity
+    function toggleERDOption(el, type, value) {
+      if (type === 'entity') {
+        el.classList.toggle('bg-indigo-600/50');
+        el.classList.toggle('ring-2');
+        el.classList.toggle('ring-indigo-400');
+        
+        if (erdState.entities.has(value)) {
+          erdState.entities.delete(value);
+        } else {
+          erdState.entities.add(value);
+        }
+      }
+    }
+
+    function selectERDRelation(el, value) {
+      document.querySelectorAll('.erd-relation').forEach(btn => {
+        btn.classList.remove('bg-indigo-600/50', 'ring-2', 'ring-indigo-400');
+      });
+      el.classList.add('bg-indigo-600/50', 'ring-2', 'ring-indigo-400');
+      erdState.relation = value;
+    }
+
+    function selectERDFK(el, value) {
+      document.querySelectorAll('.erd-fk').forEach(btn => {
+        btn.classList.remove('bg-indigo-600/50', 'ring-2', 'ring-indigo-400');
+      });
+      el.classList.add('bg-indigo-600/50', 'ring-2', 'ring-indigo-400');
+      erdState.fk = value;
+    }
+
+    function checkERDAnswers() {
+      const feedback = document.getElementById('erd-feedback');
+      let score = 0;
+      let messages = [];
+      
+      // Check entities
+      if (erdState.entities.has('CUSTOMER') && erdState.entities.has('ORDER') && 
+          !erdState.entities.has('PRODUCT') && !erdState.entities.has('EMPLOYEE')) {
+        score++;
+        messages.push('✅ Correct entities selected (CUSTOMER and ORDER)');
+      } else {
+        messages.push('❌ Check your entities - you need CUSTOMER and ORDER only');
+      }
+      
+      // Check relationship
+      if (erdState.relation === '1:M') {
+        score++;
+        messages.push('✅ Correct cardinality (1:M - One customer to many orders)');
+      } else {
+        messages.push('❌ The relationship should be 1:M (One-to-Many)');
+      }
+      
+      // Check FK
+      if (erdState.fk === 'ORDER') {
+        score++;
+        messages.push('✅ Correct foreign key placement (CustomerID in ORDER table)');
+      } else {
+        messages.push('❌ The foreign key (CustomerID) should be in the ORDER table');
+      }
+      
+      const isComplete = score === 3;
+      feedback.innerHTML = `
+        <div class="rounded-xl p-4 border ${isComplete ? 'bg-green-900/30 border-green-500/30' : 'bg-slate-800/50 border-slate-600/30'}">
+          <h5 class="font-semibold ${isComplete ? 'text-green-400' : 'text-white'} mb-3">${isComplete ? '🎉 Perfect Design!' : `Score: ${score}/3`}</h5>
+          <ul class="space-y-2 text-sm">
+            ${messages.map(m => `<li class="text-slate-300">${m}</li>`).join('')}
+          </ul>
+        </div>
+      `;
+      feedback.classList.remove('hidden');
+    }
+
+    function resetERDActivity() {
+      erdState = { entities: new Set(), relation: null, fk: null };
+      document.querySelectorAll('.erd-option, .erd-relation, .erd-fk').forEach(btn => {
+        btn.classList.remove('bg-indigo-600/50', 'ring-2', 'ring-indigo-400');
+      });
+      document.getElementById('erd-feedback').classList.add('hidden');
+    }
+
+    // Quiz Functions
+    function renderQuiz(week) {
+      const quizId = `week-${week.id}`;
+      if (!quizState[quizId]) {
+        quizState[quizId] = {
+          answers: {},
+          submitted: false,
+          currentQuestion: 0
+        };
+      }
+      
+      const state = quizState[quizId];
+      const questions = week.content.quiz;
+      
+      return `
+        <div class="card-gradient rounded-2xl p-6 border border-slate-600/30">
+          <div class="flex items-center justify-between mb-6">
+            <h3 class="text-xl font-bold text-white">📝 Week ${week.id} Quiz</h3>
+            <span class="text-sm text-slate-400">${Object.keys(state.answers).length}/${questions.length} answered</span>
+          </div>
+          
+          <div class="space-y-6">
+            ${questions.map((q, i) => `
+              <div class="bg-slate-800/50 rounded-xl p-5 ${state.submitted && state.answers[i] !== undefined ? (state.answers[i] === q.correct ? 'ring-2 ring-green-500/50' : 'ring-2 ring-red-500/50') : ''}">
+                <p class="font-medium text-white mb-4">
+                  <span class="text-indigo-400 mono">${i + 1}.</span> ${q.question}
+                </p>
+                <div class="space-y-2">
+                  ${q.options.map((opt, j) => `
+                    <button 
+                      onclick="selectQuizAnswer('${quizId}', ${i}, ${j})"
+                      class="quiz-option w-full text-left px-4 py-3 rounded-xl border-2 transition-all
+                        ${state.answers[i] === j ? 'selected border-indigo-500' : 'border-slate-600'}
+                        ${state.submitted && j === q.correct ? 'correct border-green-500' : ''}
+                        ${state.submitted && state.answers[i] === j && j !== q.correct ? 'incorrect border-red-500' : ''}"
+                      ${state.submitted ? 'disabled' : ''}
+                    >
+                      <span class="text-slate-400 mr-2">${String.fromCharCode(65 + j)}.</span>
+                      ${opt}
+                    </button>
+                  `).join('')}
+                </div>
+                ${state.submitted && state.answers[i] !== undefined ? `
+                  <div class="mt-4 p-3 rounded-lg ${state.answers[i] === q.correct ? 'bg-green-900/30' : 'bg-slate-700/50'}">
+                    <p class="text-sm ${state.answers[i] === q.correct ? 'text-green-400' : 'text-slate-300'}">
+                      ${state.answers[i] === q.correct ? '✓ Correct!' : '✗ ' + q.explanation}
+                    </p>
+                  </div>
+                ` : ''}
+              </div>
+            `).join('')}
+          </div>
+          
+          <div class="mt-6 flex items-center justify-between">
+            ${!state.submitted ? `
+              <button 
+                onclick="submitQuiz('${quizId}', ${week.id})"
+                class="px-6 py-3 bg-gradient-to-r from-indigo-500 to-purple-600 text-white rounded-xl font-medium hover:opacity-90 transition-all"
+                ${Object.keys(state.answers).length < questions.length ? 'disabled' : ''}
+              >
+                Submit Quiz
+              </button>
+            ` : `
+              <div class="flex items-center gap-4">
+                <span class="text-lg font-bold ${getScorePercentage(state, questions) >= 80 ? 'text-green-400' : getScorePercentage(state, questions) >= 60 ? 'text-yellow-400' : 'text-red-400'}">
+                  Score: ${calculateScore(state, questions)}/${questions.length} (${getScorePercentage(state, questions)}%)
+                </span>
+                ${getScorePercentage(state, questions) >= 80 ? '🏆' : getScorePercentage(state, questions) >= 60 ? '👍' : '📚'}
+              </div>
+              <button 
+                onclick="retakeQuiz('${quizId}')"
+                class="px-6 py-3 bg-slate-700 text-white rounded-xl font-medium hover:bg-slate-600 transition-all"
+              >
+                🔄 Retake Quiz
+              </button>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function selectQuizAnswer(quizId, questionIndex, answerIndex) {
+      if (quizState[quizId].submitted) return;
+      quizState[quizId].answers[questionIndex] = answerIndex;
+      loadWeekContent(currentWeek);
+    }
+
+    function submitQuiz(quizId, weekId) {
+      quizState[quizId].submitted = true;
+      
+      const week = courseData.weeks.find(w => w.id === weekId);
+      const state = quizState[quizId];
+      
+      if (getScorePercentage(state, week.content.quiz) >= 60) {
+        completedWeeks.add(weekId);
+        renderWeekTabs();
+      }
+      
+      updateProgress();
+      loadWeekContent(currentWeek);
+    }
+
+    function retakeQuiz(quizId) {
+      quizState[quizId] = { answers: {}, submitted: false, currentQuestion: 0 };
+      loadWeekContent(currentWeek);
+    }
+
+    function calculateScore(state, questions) {
+      return questions.filter((q, i) => state.answers[i] === q.correct).length;
+    }
+
+    function getScorePercentage(state, questions) {
+      return Math.round((calculateScore(state, questions) / questions.length) * 100);
+    }
+
+    // Progress Tracking
+    function updateProgress() {
+      const percentage = Math.round((completedWeeks.size / courseData.weeks.length) * 100);
+      document.getElementById('overall-progress').textContent = `${percentage}%`;
+      document.getElementById('progress-fill').style.width = `${percentage}%`;
+    }
+
+    // Initialize on load
+    init();
+  </script>
+</body>
+</html>
